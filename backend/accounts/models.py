@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
+YEAR_CHOICES = [(i, f"Year {i}") for i in range(1, 6)]
+
 class User(AbstractUser):
     """Custom user model that serves as login table for platform."""
     
@@ -26,7 +28,7 @@ class StudentProfile(models.Model):
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     rollno = models.CharField(max_length=15, unique=True)
-    year = models.PositiveSmallIntegerField(choices=[(i, f"Year {i}") for i in range(1, 6)])
+    year = models.PositiveSmallIntegerField(choices=YEAR_CHOICES)
     
     class Programme(models.TextChoices):
         BTECH_CSE = "btech_cse", "B.Tech CSE"
