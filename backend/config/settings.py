@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'accounts',
     'forum',
     'rag',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
