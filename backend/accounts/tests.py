@@ -115,8 +115,6 @@ class BanTests(APITestCase):
             {"reason": "spam"},    
         )
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
-        self.student.is_active = True
-        self.student.save()
         
     def test_moderator_cannot_unban_not_banned_student(self):
         self.client.force_authenticate(user=self.mod1)
