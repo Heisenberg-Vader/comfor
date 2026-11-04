@@ -21,10 +21,11 @@ class PostSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False,
     )
+    score = serializers.IntegerField(read_only=True)
     
     class Meta:
         model = Post
-        fields = ["id", "author", "title", "body", "author_year", "created_at", "images", "image_files"]
+        fields = ["id", "author", "title", "body", "author_year", "created_at", "images", "image_files", "score"]
         read_only_fields = ["id", "author", "author_year", "created_at"]
     
     
@@ -43,6 +44,8 @@ class PostSerializer(serializers.ModelSerializer):
         
         with transaction.atomic():
             post = Post.objects.create(**validated_data)
+            post.score = 0
+            
             for image_file in image_files:
                 Image.objects.create(post=post, file=image_file)
         
