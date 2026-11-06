@@ -18,4 +18,4 @@ class IsAuthorOrModerator(BasePermission):
     def has_object_permission(self, request, view, obj): # Runs after the view has loaded
         if request.method in SAFE_METHODS:
             return True
-        return obj.author == request.author or request.user.role == User.Role.MODERATOR
+        return obj.author == request.user or request.user.role == User.Role.MODERATOR
