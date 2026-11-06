@@ -1,11 +1,10 @@
-from django.db.models import Sum
 from rest_framework.exceptions import ValidationError
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
- 
-from ..models import Post
-from ..permissions import HasProfileToPost
+
+from ..permissions import HasProfileToPost, IsAuthorOrModerator
 from ..serializers.post import PostSerializer
+from ..queries import post_queryset
 
 
 SORT_ORDERS = {
@@ -13,17 +12,13 @@ SORT_ORDERS = {
     "top": ["-score", "-created_at"],
 }
 
+
 class PostListCreateView(ListCreateAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated, HasProfileToPost]
     
     def get_queryset(self):
-        queryset = (
-            Post.objects.filter(is_deleted=False)
-            .select_related("author")
-            .prefetch_related("images")
-            .annotate(score=Sum("votes__value", default=0))
-        )
+        queryset = post_queryset()
         year = self.request.query_params.get("year")
         
         if year is not None:
@@ -42,3 +37,15 @@ class PostListCreateView(ListCreateAPIView):
     def perform_create(self, serializer):
         profile = getattr(self.request.user, "profile", None)
         serializer.save(author=self.request.user, author_year=profile.year if profile else None)
+        
+        
+class PostDetailView(RetrieveDestroyAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated, IsAuthorOrModerator]
+    
+    def get_queryset(self):
+        return post_queryset()
+    
+    def perform_destroy(self, instance):
+        instance.is_deleted = True
+        instance.save(update_fields=["is_deleted"])
