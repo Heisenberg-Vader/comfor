@@ -18,7 +18,7 @@ class PostListCreateView(ListCreateAPIView):
     permission_classes = [IsAuthenticated, HasProfileToPost]
     
     def get_queryset(self):
-        queryset = post_queryset()
+        queryset = post_queryset(self.request.user)
         year = self.request.query_params.get("year")
         
         if year is not None:
@@ -44,7 +44,7 @@ class PostDetailView(RetrieveDestroyAPIView):
     permission_classes = [IsAuthenticated, IsAuthorOrModerator]
     
     def get_queryset(self):
-        return post_queryset()
+        return post_queryset(self.request.user)
     
     def perform_destroy(self, instance):
         instance.is_deleted = True

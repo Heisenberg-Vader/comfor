@@ -10,6 +10,7 @@ from ..models import Comment, CommentVote, Post
 from ..permissions import HasProfileToPost, IsAuthorOrModerator
 from ..serializers.comment import CommentSerializer
 from ..serializers.vote import VoteSerializer
+from ..queries import comment_queryset
 
 
 def get_comment_score(comment):
@@ -32,22 +33,18 @@ class CommentListCreateView(PostCommentsMixin, ListCreateAPIView):
         return context
     
     def get_queryset(self):
-        replies = (
-            Comment.objects.filter(is_deleted=False)
-            .select_related("author")
-            .annotate(score=Sum("votes__value", default=0))
-            .order_by("-created_at")
-        )
+        replies = comment_queryset(self.request.user).order_by("-created_at")
         return (
-            Comment.objects.filter(post=self.get_post(), parent__isnull=True, is_deleted=False)
-            .select_related("author")
-            .annotate(score=Sum("votes__value", default=0))
+            comment_queryset(self.request.user)
+            .filter(post=self.get_post(), parent__isnull=True)
             .prefetch_related(Prefetch("replies", queryset=replies, to_attr="visible_replies"))
+            .order_by("-created_at")
         )
         
     def perform_create(self, serializer):
         comment = serializer.save(author=self.request.user, post=self.get_post())
         comment.score = 0
+        comment.my_vote = None
         comment.visible_replies = []
         
 
