@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Post, Image, Comment, Vote
+from .models import Post, Image, Comment, Vote, CommentVote
 
 
 class ImageInline(admin.TabularInline):
@@ -23,3 +23,4 @@ class PostAdmin(admin.ModelAdmin):
 admin.site.register(Image)
 admin.site.register(Comment)
 admin.site.register(Vote)
+admin.site.register(CommentVote)

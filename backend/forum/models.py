@@ -53,6 +53,14 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_deleted = models.BooleanField(default=False)
     
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="replies",
+    )
+    
     def __str__(self):
         return f"Comment by {self.author} on post: {self.post.title}"
     
@@ -60,24 +68,30 @@ class Comment(models.Model):
         ordering = ["created_at"]
 
 
-class Vote(models.Model):
+class BaseVote(models.Model):
+    class Value(models.IntegerChoices):
+        UPVOTE = 1, "Upvote"
+        DOWNVOTE = -1, "Downvote"
+        
+    
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="votes",
+        related_name="%(class)ss"
     )
+    value = models.SmallIntegerField(choices=Value.choices)
+    voted_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        abstract = True
+
+
+class Vote(BaseVote):
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
         related_name="votes",
     )
-    
-    class Value(models.IntegerChoices):
-        UPVOTE = 1, "Upvote"
-        DOWNVOTE = -1, "Downvote"
-    
-    value = models.SmallIntegerField(choices=Value.choices)
-    voted_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return f"Vote by {self.user} on post: {self.post.title}"
@@ -87,5 +101,24 @@ class Vote(models.Model):
             models.UniqueConstraint(
                 fields=["user", "post"],
                 name="unique_vote_per_user_post",
+            ),
+        ]
+        
+        
+class CommentVote(BaseVote):
+    comment = models.ForeignKey(
+        Comment,
+        on_delete=models.CASCADE,
+        related_name="votes"
+    )
+    
+    def __str__(self):
+        return f"Vote by {self.user} on comment: {self.comment_id}"
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "comment"],
+                name="unique_vote_per_user_comment",
             ),
         ]
