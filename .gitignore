@@ -219,4 +219,7 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# project specific
 media/
+rag_lab/pdfs/
+rag_lab/cache/
