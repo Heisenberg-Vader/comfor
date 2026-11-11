@@ -41,13 +41,13 @@ def embed(texts, batch_size=50):
     return vectors
 
 
-def chat(messages, temperature=0):
-    for model in (LLM_MODEL, FALLBACK_LLM_MODEL):
+def chat(messages, temperature=0, models=None):
+    for model in models or (LLM_MODEL, FALLBACK_LLM_MODEL):
         try:
             reply = _groq.chat.completions.create(
                 model=model, messages=messages, temperature=temperature
             )
-            return reply.choices[0].message.content
+            return reply.choices[0].message.content, model
         except (RateLimitError, NotFoundError):
             continue
     raise RuntimeError("All groq models are unavailable at this moment.")
