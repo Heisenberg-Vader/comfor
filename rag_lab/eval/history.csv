@@ -5,3 +5,7 @@ timestamp,chunk_size,chunk_overlap,k,llm_model,note,n,hit@5,mrr,success,correct,
 2026-11-11_17_20-12,400,50,5,qwen/qwen3.8-27b,scorer fixed,25,0.955,0.818,0.92,20,4,1
 2026-11-11_17_46-59,400,50,5,qwen/qwen3.8-27b,scorer fixed,25,0.955,0.818,0.88,19,5,0
 2026-11-11_18_03-43,400,50,5,qwen/qwen3.8-27b,"4-label judge, figure Q4, answer_model logged",25,0.955,0.818,0.88,19,5,1,0
+2026-11-12_08-43-50,400,50,5,qwen/qwen3.8-27b,"39 Qs, OPTIE added, expected field",39,0.944,0.747,0.846,30,7,1,1
+2026-11-12_08-54-49,400,50,5,qwen/qwen3.8-27b,"39 Qs, OPTIE added, expected field",39,0.944,0.747,0.846,29,7,1,2
+2026-11-12_09-06-58,400,50,5,qwen/qwen3.8-27b,fixed evaluate,39,0.944,0.747,0.897,31,7,1,0
+2026-11-12_14-38-00,400,50,5,qwen/qwen3.8-27b,"skip contents pages, normalise citations and pause to 8s",39,0.944,0.77,0.897,31,7,0,1

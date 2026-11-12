@@ -1,3 +1,5 @@
+import re
+
 from providers import chat
 
 
@@ -10,7 +12,10 @@ Rules:
 2. Cite every claim with its own source number in square brackets, like [1], [2] ... etc
 3. If the sources do not contain the answer, reply with EXACTLY this English sentence, whatever the language of the question: "{REFUSAL}"
 4. Reply in the language of the question. Keep technical terms in English where the notes do.
+5. Copy formulas and code exactly as they appear in the sources. Never rewrite them into a more familiar or textbook form. If a formula in the sources looks incorrect or incomplete, say so instead of reconstructing it.
 """
+
+GPT_OSS_CITATION = re.compile(r"【(\d+)(?:†[^】]*)?】")
 
 def format_sources(hits):
     ref = []
@@ -24,4 +29,6 @@ def answer(question, hits):
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": f"Sources:\n\n{format_sources(hits)}\n\nQuestion: {question}"},
     ]
-    return chat(messages)
+    text, model =  chat(messages)
+    text = GPT_OSS_CITATION.sub(r"[\1]", text)
+    return text, model

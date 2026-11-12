@@ -24,7 +24,7 @@ HISTORY = HERE / "eval" / "history.csv"
 K = 5
 MRR_DEPTH = 20
 JUDGE_MODELS = (FALLBACK_LLM_MODEL,)
-PAUSE_SECONDS = 4
+PAUSE_SECONDS = 8 # 4
 
 JUDGE_PROMPT = """
 You grade answers produced by a study assisstant that must answer only from a student's notes.
@@ -131,8 +131,9 @@ def evaluate_item(item, query_vector, chunks, index, with_llm):
             row["label"], row["reason"] = "wrong", "answered a question the notes do not cover"
         else:
             row["label"], row["reason"] = judge(item, response, top)
-        expected = "refused" if item["source"] is None else "correct"
-        row["success"] = row["label"] == expected
+        default = "refused" if item["source"] is None else "correct"
+        expected = item.get("expected", default)
+        row["success"] = row["label"] in expected
         row["answer_model"] = answer_model
     return row
 
