@@ -9,3 +9,5 @@ timestamp,chunk_size,chunk_overlap,k,llm_model,note,n,hit@5,mrr,success,correct,
 2026-11-12_08-54-49,400,50,5,qwen/qwen3.8-27b,"39 Qs, OPTIE added, expected field",39,0.944,0.747,0.846,29,7,1,2
 2026-11-12_09-06-58,400,50,5,qwen/qwen3.8-27b,fixed evaluate,39,0.944,0.747,0.897,31,7,1,0
 2026-11-12_14-38-00,400,50,5,qwen/qwen3.8-27b,"skip contents pages, normalise citations and pause to 8s",39,0.944,0.77,0.897,31,7,0,1
+2026-11-12_17-57-35,400,50,5,,tables as markdown chunks,39,0.944,0.752,,,,,
+2026-11-14_17-41-39,400,50,5,qwen/qwen3.8-27b,"tables as markdown chunks, cache on",39,0.944,0.752,0.923,32,7,0,0

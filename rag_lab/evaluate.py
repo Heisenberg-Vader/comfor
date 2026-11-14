@@ -12,7 +12,7 @@ import numpy as np
 from answer import REFUSAL, answer, format_sources
 from chunking import SPLITTER
 from corpus import load_corpus
-from providers import FALLBACK_LLM_MODEL, LLM_MODEL, chat, embed
+from providers import FALLBACK_LLM_MODEL, LLM_MODEL, chat, embed, enable_cache
 from search import search
 
 
@@ -20,6 +20,7 @@ HERE = Path(__file__).resolve().parent
 GOLD = HERE / "eval" / "gold.jsonl"
 RESULTS = HERE / "eval" / "results"
 HISTORY = HERE / "eval" / "history.csv"
+LLM_CACHE = HERE / "eval" / "llm_cache.jsonl"
 
 K = 5
 MRR_DEPTH = 20
@@ -214,8 +215,13 @@ def main():
     parser.add_argument("--note", default="",
         help="what changed in this run, saved with the results."
     )
+    parser.add_argument("--no-cache", action="store_true",
+        help="call the LLM for every item, ignoring cached responses"
+    )
     args = parser.parse_args()
     with_llm = not args.retrieval_only
+    if with_llm and not args.no_cache:
+        enable_cache(LLM_CACHE)
     
     gold = load_gold()
     chunks, index = load_corpus(verbose=False)
